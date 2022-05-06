@@ -1,0 +1,64 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class FallingBlocks : MonoBehaviour
+{
+    [SerializeField]
+    private float radius = 1f;
+    
+    ObjectPool objectPool;
+    private void Start()
+    {
+        objectPool = ObjectPool.Instance;
+        
+    }
+
+
+    public void SpawnNormal()
+    {    
+            Vector3 randomPos = new Vector3(Random.Range(-30, 31), 62, Random.Range(-10, 11));
+            objectPool.SpawnFromPool("Normal", randomPos, Quaternion.identity);
+            Vector3 shadow = new Vector3(randomPos.x, .002f, randomPos.z);
+            objectPool.SpawnFromPool("Shadow", shadow, Quaternion.identity);
+    }
+
+    public void SpawnHeal()
+    {
+        Vector3 randomPos = new Vector3(Random.Range(-30, 31), 62, Random.Range(-10, 11));
+        objectPool.SpawnFromPool("Heal", randomPos, Quaternion.identity);
+        Vector3 shadow = new Vector3(randomPos.x, .002f, randomPos.z);
+        objectPool.SpawnFromPool("Shadow", shadow, Quaternion.identity);
+    }
+    public void SpawnSlow()
+    {
+        Vector3 randomPos = new Vector3(Random.Range(-30, 31), 62, Random.Range(-10, 11));
+        objectPool.SpawnFromPool("Slow", randomPos, Quaternion.identity);
+        Vector3 shadow = new Vector3(randomPos.x, .002f, randomPos.z);
+        objectPool.SpawnFromPool("Shadow", shadow, Quaternion.identity);
+    }
+    public void SpawnFast()
+    {
+        Vector3 randomPos = new Vector3(Random.Range(-30, 31), 62, Random.Range(-10, 11));
+        objectPool.SpawnFromPool("Fast", randomPos, Quaternion.identity);
+        Vector3 shadow = new Vector3(randomPos.x, .002f, randomPos.z);
+        objectPool.SpawnFromPool("Shadow", shadow, Quaternion.identity);
+    }
+    public void SpawnBonus()
+    {
+        Vector3 randomPos = new Vector3(Random.Range(-30, 31), 62, Random.Range(-10, 11));
+        objectPool.SpawnFromPool("Bonus", randomPos, Quaternion.identity);
+        Vector3 shadow = new Vector3(randomPos.x, .002f, randomPos.z);
+        objectPool.SpawnFromPool("Shadow", shadow, Quaternion.identity);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+
+        Gizmos.DrawWireSphere(this.transform.position, radius);
+    }
+
+  
+
+}
