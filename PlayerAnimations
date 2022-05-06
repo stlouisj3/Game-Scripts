@@ -1,0 +1,58 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class playerAnimationController : MonoBehaviour
+{
+    Animator animator;
+    InputManager input;
+    thirdPersonShoot shoot;
+    private bool jumpy;
+    void Start()
+    {
+        animator = GetComponent<Animator>();
+        input = GetComponent<InputManager>();
+        shoot = GetComponent<thirdPersonShoot>();
+
+    }
+
+    
+    void Update()
+    {
+        animator.SetBool("isJumping", jumpy);
+        if (input.getPlayerMovement() == Vector2.zero)//Animations for movement
+        {//Player is still
+            animator.SetBool("isMoving",false);
+            //StartCoroutine(Idle());
+        } 
+       else
+            animator.SetBool("isMoving", true);
+
+        if (jumpy)
+            jumpy = false;                        
+        
+        if (input.getAim() == 1 && shoot.collected)
+            animator.SetBool("isAiming", true);
+        else
+            animator.SetBool("isAiming", false);
+        if (input.getShot() == 0 && shoot.isCharge && shoot.collected)
+        {
+        animator.SetBool("isShooting", true);
+        }   
+        else if (input.getShot() == 0 && !shoot.isCharge)
+            animator.SetBool("isShooting", false);
+    }
+    IEnumerator Idle()
+    {
+        yield return new WaitForSeconds(5);
+        if (input.getPlayerMovement() == Vector2.zero)
+            animator.SetBool("isIdle", true);
+        else
+            animator.SetBool("isIdle", false);
+    }
+    public void setJump()
+    {
+        jumpy = true;
+        Debug.Log("Jump");
+    }
+}
