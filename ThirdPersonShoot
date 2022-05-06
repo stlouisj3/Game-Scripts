@@ -1,0 +1,135 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class thirdPersonShoot : MonoBehaviour
+{
+
+
+    private InputManager input;
+    private Transform cameraMainTransform;
+    public Transform barrel;
+    ObjectPool objectpool;
+    //Bullet Stats
+    private float charge;
+    //private float ammo;
+    private float chargedShot;
+    public bool isCharge = false;
+    [SerializeField]
+    private float baseDMG = 24f;
+    //[SerializeField]
+    //private float maxAmmo = 10;
+    
+
+    [SerializeField]
+    private float bulletMissDistance = 25f;
+
+    //Camera Stuffs
+    public GameObject shakeCam;
+    public GameObject mainCamera;
+    public GameObject aimCamera;
+    public GameObject recticle;
+    public bool collected;
+    //Energy Bar
+    public EnergyBar energyBar;
+
+    private void Start()
+    {
+        //ammo = maxAmmo;
+        collected = false;
+        input = gameObject.GetComponent<InputManager>();
+        cameraMainTransform = Camera.main.transform;
+        objectpool = ObjectPool.Instance;
+        mainCamera.SetActive(false);
+        aimCamera.SetActive(false);
+        
+    }
+    private void shoot() //I should really clean this up
+    {
+        RaycastHit hit;
+        GameObject bullet = objectpool.SpawnFromPool("Bullet", barrel.position, Quaternion.identity);
+        BulletControl bulletControl = bullet.GetComponent<BulletControl>();
+           if(Physics.Raycast(cameraMainTransform.position,cameraMainTransform.forward,out hit, Mathf.Infinity))
+            {
+            
+            //bulletControl.hipFire = false;
+            bulletControl.dmg = chargedShot;
+            bulletControl.target = hit.point;
+            bulletControl.hit = true;                
+            }
+            else
+             {
+            
+            //bulletControl.hipFire = false;
+            bulletControl.target = cameraMainTransform.position + cameraMainTransform.forward * bulletMissDistance;
+            bulletControl.hit = false;
+             }
+    }
+
+   
+    private void Update()
+    {
+        //When the aim button is held down it switches to the aim camera and puts on a retacle.
+        if (input.getAim() == 1 && !aimCamera.activeInHierarchy && collected)
+        {
+            
+            mainCamera.SetActive(false);
+            aimCamera.SetActive(true);
+            StartCoroutine(showReticle());
+            
+        }//When you let go of aim it switches back to the main camera.
+        else if (input.getAim() != 1 && !mainCamera.activeInHierarchy)
+
+        {
+            
+            mainCamera.SetActive(true);
+            aimCamera.SetActive(false);
+            recticle.SetActive(false);           
+        }
+        
+        if (input.getShot() == 1 && energyBar.Energy.value > 0 && !energyBar.reloading && collected) //When shoot button is held down
+        {
+            chargedShot = 0;
+            charge = charge + Time.deltaTime;
+            isCharge = true;                       
+        }
+        if (input.getShot() == 1 && energyBar.Energy.value == 0 && collected) // Tries to shoot with no ammo
+        {            
+            energyBar.reload();
+        }
+        if (input.getShot() == 0 && isCharge && energyBar.Energy.value > 0 && !energyBar.reloading && collected) //Releases the shoot button
+            {
+            if(charge < 1f)
+            {
+                chargedShot = baseDMG;
+                energyBar.Energy.value -= 5;
+                
+            }else if(charge >= energyBar.Energy.value)
+            {
+                chargedShot = baseDMG * energyBar.Energy.value;
+                energyBar.Energy.value = 0;
+            }
+            else if(chargedShot < energyBar.Energy.value)
+            {
+                chargedShot = charge * baseDMG;
+                energyBar.Energy.value = energyBar.Energy.value - charge;
+            }
+            
+            if(input.getAim() == 1 && collected)
+                shoot();
+            //if (input.getAim() != 1)
+                //hipFire();
+            
+            
+            
+            charge = 0;
+            isCharge = false;
+             }        
+    }
+    private IEnumerator showReticle()
+    {
+        yield return new WaitForSeconds(.25f);
+        recticle.SetActive(true);
+    }
+    
+}
