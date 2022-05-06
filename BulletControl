@@ -1,0 +1,74 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BulletControl : MonoBehaviour
+{
+    //Uses Pooled Objects
+    [SerializeField]
+    private float speed = 50f;
+    [SerializeField]
+    private float timeToDestroy = 3f;
+
+    ObjectPool pool;
+    public Vector3 target { get; set; }
+    public bool hit { get; set; }
+    public float dmg { get; set; }
+    //public bool hipFire = false;
+    public GameObject player;
+
+
+    private void Start()
+    {
+        pool = ObjectPool.Instance;
+    }
+    private void OnEnable()
+    {
+         
+        StartCoroutine(Disable());
+    }
+   
+
+    private void Update()
+    {
+
+        
+            transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
+                if(/*!hit &&*/ Vector3.Distance(transform.position,target) < .01f)
+                {
+                    this.gameObject.SetActive(false);
+                }
+       
+        
+        
+    }
+    private void OnCollisionEnter(Collision coll)
+    {
+        if (coll.gameObject.CompareTag("Enemy"))
+        {
+            Debug.Log("enemy Hit");
+            //enemyHealth enemyDmg = GetComponent<enemyHealth>();
+            //enemyDmg.dealDamage(dmg);
+            enemyHealth.dealDmg(dmg);
+            
+            
+        }
+        if (coll.gameObject.CompareTag("Player"))
+        {
+            HealthBar.dealPlayer(dmg);
+            
+        }
+        ContactPoint contact = coll.GetContact(0);
+        pool.SpawnFromPool("Decal", contact.point + contact.normal * .0001f, Quaternion.LookRotation(contact.normal));
+               
+        this.gameObject.SetActive(false);
+
+    }
+
+    IEnumerator Disable()
+    {
+        yield return new WaitForSeconds(timeToDestroy);
+        this.gameObject.SetActive(false);
+    }
+
+}
