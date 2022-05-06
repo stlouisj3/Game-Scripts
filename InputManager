@@ -1,0 +1,65 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+ public class InputManager : MonoBehaviour
+{
+    //Each function is used to notify if a certain button is pressed.
+    //Must link this file with the script you want to use controls with.
+    private PlayerControls playerControls;
+    
+
+    private void Awake()
+    {
+        playerControls = new PlayerControls();
+    }
+    private void OnEnable()
+    {
+        playerControls.Enable();
+        
+    }
+    private void OnDisable()
+    {
+        playerControls.Disable();
+    }
+
+    public Vector2 getPlayerMovement()
+    {
+        return playerControls.Player.Movement.ReadValue<Vector2>();
+    }
+
+    public Vector2 getLook()
+    {
+        Debug.Log(playerControls.Player.CameraMovement.ReadValue<Vector2>());
+        return playerControls.Player.CameraMovement.ReadValue<Vector2>();
+    }
+    public bool getJump()
+    {
+        return playerControls.Player.Jump.triggered;
+    }
+    public bool getPause()
+    {
+        return playerControls.Player.Pause.triggered;
+    }
+    public bool getInventory()
+    {
+        return playerControls.Player.Inventory.triggered;
+    }
+    public bool getInteract()
+    {
+        return playerControls.Player.Interact.triggered;
+    }
+    public float getAim()
+    {
+        return playerControls.Player.Aim.ReadValue<float>();
+    }
+    public float getShot()
+    {
+        return playerControls.Player.Fire.ReadValue<float>();
+    }
+
+    /*public void newTestJump()
+    {
+        playerMovement.jumpTest();
+    }*/
+}
