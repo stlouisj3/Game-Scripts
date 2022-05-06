@@ -1,0 +1,35 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class enemyHealth : MonoBehaviour
+{
+    [SerializeField]
+    private float startHealth;
+    private float health;
+    public delegate void enemyDamage(float dmg);
+    public static enemyDamage dealDmg;
+
+    public GameObject doorScene;
+    void Start()
+    {
+        dealDmg = dealDamage;
+        doorScene.SetActive(false);
+    }
+    void Awake()
+    {
+        health = startHealth;
+    }
+    // Update is called once per frame
+    public void dealDamage(float dmg)
+    {
+        health -= dmg;
+        Debug.Log(health);
+        if (health < 0)
+        {
+            doorScene.SetActive(true);
+            this.gameObject.SetActive(false);
+        }
+            
+    }
+}
