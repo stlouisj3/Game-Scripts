@@ -1,0 +1,59 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class shootingScript : MonoBehaviour
+{
+    InputManager input;
+    ObjectPool pool;
+
+    [SerializeField]
+    Transform barrel;
+
+    Vector3 shootingPos;
+
+    [SerializeField]
+    ParticleSystem destroyEffect;
+    
+    void Start()
+    {
+        input = GetComponent<InputManager>();
+        pool = ObjectPool.Instance;
+    }
+
+    private void shoot() //I should really clean this up
+    {
+        RaycastHit hit;
+               
+        
+
+        Ray ray = Camera.main.ScreenPointToRay(input.getCameraAim());
+        
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+        {
+            if (hit.collider.CompareTag("Target"))
+            {
+                
+                //add score
+                shootingGamesScore.incScore(1);
+                //Instantiate(destroyEffect, hit.collider.gameObject.transform.position, Quaternion.identity); //if not using object pool
+                pool.SpawnFromPool("deathEffect", hit.collider.gameObject.transform.position, Quaternion.identity);
+                hit.collider.gameObject.SetActive(false);
+                //Debug.Log("Target Hit");
+            }
+            
+        }
+       
+        
+    }
+    void Update()
+    {
+        if (input.getMouseShoot() && startScreen.hasStarted)
+        {
+            shoot();
+            //Debug.Log("Shoot Man");
+        }
+            
+        
+    }
+}
